@@ -215,7 +215,7 @@ jobs:
           tag: ${{ steps.clean.outputs.build_tag }}
           artifacts: build/output/images/*
           allowUpdates: true
-          token: ${{ secrets.MY_TOKEN }}
+          # token: ${{ secrets.MY_TOKEN }}
 
       - name: Rebuild Armbian
         uses: Lemon1151/rk33xx-armbian@main

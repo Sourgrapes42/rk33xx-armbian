@@ -193,8 +193,10 @@ jobs:
               ./compile.sh build RELEASE=${{ inputs.set_release }} BOARD=dg-svr-865-tiny BRANCH=current BUILD_MINIMAL=no \
                     BUILD_ONLY=default HOST=dg-svr-865-tiny BUILD_DESKTOP=no EXPERT=yes KERNEL_CONFIGURE=no \
                     COMPRESS_OUTPUTIMAGE="sha" SHARE_LOG=yes
-          ls -a
-          ls -R output
+          ls -R output/images
+          cd output/images
+          sudo tar -czf all.tar.gz *
+          for file in *.img; do tar -czvf "$file.tar.gz" "$file"; done
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Organize files and clear space
@@ -215,9 +217,9 @@ jobs:
         if: ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
         with:
           tag: ${{ steps.clean.outputs.build_tag }}
-          artifacts: build/output/images/*
+          artifacts: /builder/build/output/images/*
           allowUpdates: true
-          token: ${{ secrets.MY_TOKEN }}
+          # token: ${{ secrets.MY_TOKEN }}
 
       # - name: Rebuild Armbian
       #   uses: Lemon1151/rk33xx-armbian@main
@@ -233,21 +235,21 @@ jobs:
       #     armbian_fstype: ${{ inputs.armbian_fstype }}
       #     builder_name: ${{ inputs.builder_name }}
 
-      - name: Upload Rebuild image to Release
-        uses: ncipollo/release-action@main
-        if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
-        with:
-          tag: ${{ steps.clean.outputs.build_tag }}
-          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
-          allowUpdates: true
-          removeArtifacts: false
-          replacesArtifacts: true
-          token: ${{ secrets.MY_TOKEN }}
-          body: |
-            ### Armbian Image information
-            - Default username: root
-            - Default password: 1234
-            - Install command: armbian-install
-            - Update command: armbian-update
-            ### Armbian Image Verification
-            - sha256sum
+      # - name: Upload Rebuild image to Release
+      #   uses: ncipollo/release-action@main
+      #   if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+      #   with:
+      #     tag: ${{ steps.clean.outputs.build_tag }}
+      #     artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+      #     allowUpdates: true
+      #     removeArtifacts: false
+      #     replacesArtifacts: true
+      #     token: ${{ secrets.MY_TOKEN }}
+      #     body: |
+      #       ### Armbian Image information
+      #       - Default username: root
+      #       - Default password: 1234
+      #       - Install command: armbian-install
+      #       - Update command: armbian-update
+      #       ### Armbian Image Verification
+      #       - sha256sum
