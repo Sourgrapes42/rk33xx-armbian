@@ -138,9 +138,8 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          docker rmi $(docker images -q) 2>/dev/null
+          docker rmi $(docker images -q)
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
-          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
@@ -194,6 +193,7 @@ jobs:
               ./compile.sh RELEASE=${{ inputs.set_release }} BOARD=dg-svr-865-tiny BRANCH=current BUILD_MINIMAL=no \
                     BUILD_ONLY=default HOST=dg-svr-865-tiny BUILD_DESKTOP=no EXPERT=yes KERNEL_CONFIGURE=no \
                     COMPRESS_OUTPUTIMAGE="sha" SHARE_LOG=yes
+          ls -a build/output/images/
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Organize files and clear space
