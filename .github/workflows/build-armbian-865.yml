@@ -138,7 +138,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          docker rmi $(docker images -q)
+          # docker rmi $(docker images -q)
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
@@ -190,10 +190,11 @@ jobs:
         run: |
           # Compile method and parameter description: https://docs.armbian.com/Developer-Guide_Build-Options
           cd build/
-              ./compile.sh RELEASE=${{ inputs.set_release }} BOARD=dg-svr-865-tiny BRANCH=current BUILD_MINIMAL=no \
+              ./compile.sh build RELEASE=${{ inputs.set_release }} BOARD=dg-svr-865-tiny BRANCH=current BUILD_MINIMAL=no \
                     BUILD_ONLY=default HOST=dg-svr-865-tiny BUILD_DESKTOP=no EXPERT=yes KERNEL_CONFIGURE=no \
                     COMPRESS_OUTPUTIMAGE="sha" SHARE_LOG=yes
-          ls -a build/output/images/
+          ls -a
+          ls -R output
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Organize files and clear space
@@ -201,8 +202,8 @@ jobs:
         if: ${{ steps.compile.outputs.status }} == 'success' && !cancelled()
         run: |
           # Organize and keep essential files, delete unnecessary files
-          chmod +x ${ROOTFS_SCRIPT}
-          ${ROOTFS_SCRIPT} -v ${{ inputs.set_release }}
+          # chmod +x ${ROOTFS_SCRIPT}
+          # ${ROOTFS_SCRIPT} -v ${{ inputs.set_release }}
 
           # Output cleaning result information
           df -hT ${PWD}
